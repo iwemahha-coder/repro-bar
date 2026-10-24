@@ -98,7 +98,7 @@ document.addEventListener('click', event => {
   // 地図ボタンを押したときだけGoogle広告へ送信
   if (link.dataset.action === 'open_map') {
     window.gtag('event', 'conversion', {
-      send_to: 'ここをGoogle広告画面からコピーした値に置き換える'
+      send_to: 'AW-18415992816/xTvoCI-9-PwcEPD_ts1E'
     });
   }
 });
