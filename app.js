@@ -83,9 +83,22 @@ instagramDetails?.addEventListener('toggle', () => {
   document.body.append(script);
 });
 
-// site_action はクリック操作。通話成立・経路検索完了・来店数として扱わない。
+// ボタンのクリック操作を記録する。
 document.addEventListener('click', event => {
   const link = event.target.closest('a[data-action]');
   if (!link || typeof window.gtag !== 'function') return;
-  window.gtag('event', 'site_action', { action_name: link.dataset.action, placement: link.dataset.placement || 'body', transport_type: 'beacon' });
+
+  // 既存のGA4への送信
+  window.gtag('event', 'site_action', {
+    action_name: link.dataset.action,
+    placement: link.dataset.placement || 'body',
+    transport_type: 'beacon'
+  });
+
+  // 地図ボタンを押したときだけGoogle広告へ送信
+  if (link.dataset.action === 'open_map') {
+    window.gtag('event', 'conversion', {
+      send_to: 'ここをGoogle広告画面からコピーした値に置き換える'
+    });
+  }
 });
