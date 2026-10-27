@@ -20,3 +20,13 @@
 .sflQuickLinks{display:grid;gap:8px;min-width:210px}.sflQuickLinks .btn{font-size:14px;background:#ffffff05}
 .sflReturn{font-size:14px;color:var(--muted);margin:0 0 24px}.sflPosterHeading{margin:28px 0 0}
 @media(max-width:768px){.sflQuick{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px}.sflQuick h2{font-size:15px}.sflNext{font-size:18px}.sflQuickLinks{min-width:0;grid-template-columns:1fr 1fr;gap:8px}.sflQuickLinks .btn:last-child{grid-column:1/-1}.heroSflLink{font-size:14px}.sflQuick .small{font-size:13px}}
+
+/* 10月末から11月への開催予定更新。日程は画像ではなく文字で掲載。 */
+.sflNovemberNotice{margin:0 0 10px;color:#f4cf8b;font-size:14px}.sflNovemberNotice a{display:inline-flex;align-items:center;min-height:44px}
+.sflMonth{margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:#ffffff03}
+.sflMonth h4{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 6px;font-size:18px;color:#f4cf8b;line-height:1.6}
+.sflMonth h4>span{font-size:13px;font-weight:400;color:var(--muted)}
+.sflMonth .scheduleList li{grid-template-columns:1fr}.sflMonth .scheduleList .eventState{margin-left:0;grid-column:1}
+.sflMonth[hidden],#sfl-schedule-status[hidden],.sflNovemberNotice[hidden]{display:none}
+.sflGuideOnly{grid-template-columns:minmax(0,360px)}
+@media(max-width:768px){.sflMonth{padding:12px 14px}.sflMonth h4{font-size:17px}.sflNovemberNotice{font-size:14px}}

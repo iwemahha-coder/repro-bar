@@ -3,7 +3,7 @@
 // 日程は index.html の #sfl-schedule のみを編集。日本時間の当日は「本日」と表示。
 function updateSflNotice(now = new Date()) {
   const notice = document.getElementById('next-event');
-  const rows = Array.from(document.querySelectorAll('#sfl-schedule li'));
+  const rows = Array.from(document.querySelectorAll('#sfl-schedule li')).filter(row => row.querySelector('time'));
   if (!notice || !rows.length) return;
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
   let next = null;
@@ -15,6 +15,18 @@ function updateSflNotice(now = new Date()) {
     row.querySelector('.eventState')?.remove();
     if (!next && day >= today) next = { row, time, day };
   });
+  // 月ごとの全日程が日本時間で過去日になったら、月の枠を隠す。
+  document.querySelectorAll('[data-sfl-month]').forEach(group => {
+    const dates = Array.from(group.querySelectorAll('time'));
+    group.hidden = dates.length > 0 && dates.every(time => time.dateTime.slice(0, 10) < today);
+  });
+  const novemberDates = Array.from(document.querySelectorAll('#sfl-november time'));
+  const novemberNotice = document.querySelector('.sflNovemberNotice');
+  if (novemberNotice && novemberDates.length) {
+    novemberNotice.hidden = novemberDates.every(time => time.dateTime.slice(0, 10) < today);
+  }
+  const status = document.getElementById('sfl-schedule-status');
+  if (status) status.hidden = Boolean(next);
   if (next) {
     next.row.classList.add('isNext');
     const state = document.createElement('span');
