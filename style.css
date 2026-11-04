@@ -30,3 +30,9 @@
 .sflMonth[hidden],#sfl-schedule-status[hidden],.sflNovemberNotice[hidden]{display:none}
 .sflGuideOnly{grid-template-columns:minmax(0,360px)}
 @media(max-width:768px){.sflMonth{padding:12px 14px}.sflMonth h4{font-size:17px}.sflNovemberNotice{font-size:14px}}
+
+/* 席予約の案内 */
+.btnBooking,.bottomBar .bottomBooking{border-color:#b58d53;background:#382816;color:#ffdf9c;font-weight:700}
+.btnBooking:hover,.bottomBar .bottomBooking:hover{background:#49331b}
+.bookingCard{margin:0 0 20px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.bookingCard h3{margin-bottom:8px}
