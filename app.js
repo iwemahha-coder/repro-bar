@@ -1,32 +1,46 @@
 'use strict';
 
-// 日程は index.html の #sfl-schedule のみを編集。日本時間の当日は「本日」と表示。
+// 日程は index.html の #sfl-schedule を更新。日本時間の翌日から終了分を非表示。
+const tokyoDate = new Intl.DateTimeFormat('sv-SE', {
+  timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit'
+});
 function updateSflNotice(now = new Date()) {
   const notice = document.getElementById('next-event');
-  const rows = Array.from(document.querySelectorAll('#sfl-schedule li')).filter(row => row.querySelector('time'));
-  if (!notice || !rows.length) return;
-  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  if (!notice) return;
+  const today = tokyoDate.format(now);
+  const activeMonths = new Set();
   let next = null;
-  rows.forEach(row => {
-    const time = row.querySelector('time');
-    const day = time.dateTime.slice(0, 10);
-    row.classList.toggle('isPast', day < today);
-    row.classList.remove('isNext');
-    row.querySelector('.eventState')?.remove();
-    if (!next && day >= today) next = { row, time, day };
-  });
-  // 月ごとの全日程が日本時間で過去日になったら、月の枠を隠す。
   document.querySelectorAll('[data-sfl-month]').forEach(group => {
-    const dates = Array.from(group.querySelectorAll('time'));
-    group.hidden = dates.length > 0 && dates.every(time => time.dateTime.slice(0, 10) < today);
+    let hasUpcoming = false;
+    group.querySelectorAll('li').forEach(row => {
+      const time = row.querySelector('time[datetime]');
+      if (!time) return;
+      const day = time.dateTime.slice(0, 10);
+      row.hidden = day < today;
+      row.classList.remove('isNext');
+      row.querySelector('.eventState')?.remove();
+      if (row.hidden) return;
+      hasUpcoming = true;
+      if (!next || day < next.day) next = {row, time, day};
+    });
+    group.hidden = !hasUpcoming;
+    if (hasUpcoming) activeMonths.add(group.dataset.sflMonth);
   });
-  const novemberDates = Array.from(document.querySelectorAll('#sfl-november time'));
-  const novemberNotice = document.querySelector('.sflNovemberNotice');
-  if (novemberNotice && novemberDates.length) {
-    novemberNotice.hidden = novemberDates.every(time => time.dateTime.slice(0, 10) < today);
+  document.querySelectorAll('[data-sfl-jump]').forEach(link => {
+    link.hidden = !activeMonths.has(link.dataset.sflJump);
+  });
+  const posters = document.querySelector('.sflPosters');
+  if (posters) {
+    posters.querySelectorAll('[data-sfl-poster]').forEach(poster => {
+      poster.hidden = !activeMonths.has(poster.dataset.sflPoster);
+    });
+    const visible = posters.querySelectorAll('figure:not([hidden])').length;
+    posters.style.setProperty('--poster-columns', visible || 1);
   }
   const status = document.getElementById('sfl-schedule-status');
   if (status) status.hidden = Boolean(next);
+  const scheduleUpdate = document.getElementById('sfl-schedule-update');
+  if (scheduleUpdate) scheduleUpdate.hidden = !next;
   if (next) {
     next.row.classList.add('isNext');
     const state = document.createElement('span');
@@ -39,8 +53,16 @@ function updateSflNotice(now = new Date()) {
   }
 }
 updateSflNotice();
-// 開きっぱなしのタブも日付変更後に更新。
-document.addEventListener('visibilitychange', () => { if (!document.hidden) updateSflNotice(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && tokyoDate.format() !== lastVisibleSflDay) refreshSflDay(); });
+// 日付をまたいで表示し続けた場合も反映する。
+window.setInterval(() => {
+  if (!document.hidden && tokyoDate.format() !== lastVisibleSflDay) refreshSflDay();
+}, 60 * 1000);
+let lastVisibleSflDay = tokyoDate.format();
+function refreshSflDay() {
+  lastVisibleSflDay = tokyoDate.format();
+  updateSflNotice();
+}
 
 // native dialog でフォーカスを保持。画像は拡大ボタンと別画面表示にも対応。
 const lightbox = document.getElementById('lightbox');
